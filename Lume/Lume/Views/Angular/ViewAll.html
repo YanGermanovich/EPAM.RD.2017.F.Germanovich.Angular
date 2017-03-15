@@ -1,0 +1,11 @@
+﻿<a href="/Angular/Add">Add image</a>
+<br />
+<select ng-options="album as album.nameAlbum for album in Albums" ng-model="SelectedAlbum"></select>
+<div ng-repeat="image in SelectedAlbum.images">
+    <p>{{image.name}}</p>
+    <img ng-src={{image.src}}>
+    <input type="button" value="del" ng-click="RemoveImg($index)">
+
+</div>
+<input ng-click="GetNumber()" type="button" value="getNumber"/>
+<textarea ng-model="Number" ></textarea>
