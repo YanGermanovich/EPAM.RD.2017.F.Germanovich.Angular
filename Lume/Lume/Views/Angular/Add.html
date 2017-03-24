@@ -1,11 +1,10 @@
-﻿<a href="/Angular/ViewAll">View all images</a>
-<select ng-options="album as album.nameAlbum for album in Albums" ng-model="SelectedAlbum"></select>
+﻿<select ng-options="album as album.Name for album in Albums" ng-model="SelectedAlbum"></select>
 <br>
-<input type="text" placeholder="Enter name" ng-model="TempName">
+<input id="tmp_src" type="text" placeholder="Enter name" ng-model="TempName">
 <br>
-<input type="text" placeholder="Enter url" ng-model="TempSrc">
+<input id="tmp_desc" type="text" placeholder="Enter url" ng-model="TempSrc">
 <br>
-<input type="button" value="add" ng-click="AddImage()">
+<input id="add_btn" type="button" value="Add Image" ng-click="AddImage()">
 <br>
 
 <div>

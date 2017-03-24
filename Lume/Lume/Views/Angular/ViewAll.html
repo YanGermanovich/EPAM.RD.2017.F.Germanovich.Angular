@@ -1,11 +1,10 @@
-﻿<a href="/Angular/Add">Add image</a>
-<br />
-<select ng-options="album as album.nameAlbum for album in Albums" ng-model="SelectedAlbum"></select>
-<div ng-repeat="image in SelectedAlbum.images">
-    <p>{{image.name}}</p>
-    <img ng-src={{image.src}}>
-    <input type="button" value="del" ng-click="RemoveImg($index)">
-
+﻿<div ng-if="!loading">
+    <select ng-options="album as album.Name for album in Albums" ng-model="SelectedAlbum"></select>
+    <div class="view_image" ng-repeat="image in SelectedAlbum.Images">
+        <ng-image image=image ></ng-image>
+        <input class="del_btn" type="button" value="del" ng-click="RemoveImg(image.ImageId)">
+    </div>
 </div>
-<input ng-click="GetNumber()" type="button" value="getNumber"/>
-<textarea ng-model="Number" ></textarea>
+<div ng-if="loading">
+    <img src="../../img/loading.gif" />
+</div>

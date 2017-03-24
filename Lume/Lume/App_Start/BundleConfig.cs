@@ -24,7 +24,8 @@ namespace Lume
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/site.css"));
-
+            //bundles.Add(new StyleBundle("~/Content/bootstrap").Include(
+            //            "~/Content/bootstrap.css"));
             bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
                         "~/Content/themes/base/jquery.ui.core.css",
                         "~/Content/themes/base/jquery.ui.resizable.css",
@@ -41,6 +42,10 @@ namespace Lume
             bundles.Add(new ScriptBundle("~/bundles/angular").Include(
                         "~/Scripts/angular.js",
                         "~/Scripts/angular-route.js",
+                        "~/Scripts/angular-ui/ui-bootstrap.js",
+                        "~/Scripts/angular-ui/ui-bootstrap-tpls.js",
+                        "~/Scripts/angular-animate.js",
+                        "~/Scripts/angular-sanitize.js",
                         "~/Scripts/myScripts/indexScripts.js"));
             BundleTable.EnableOptimizations = false;
         }

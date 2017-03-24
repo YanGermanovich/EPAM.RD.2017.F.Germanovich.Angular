@@ -1,0 +1,5 @@
+﻿<p id="description_show" ng-show="isShow">{{description}}</p>
+<textarea id="description_edit"type="text" ng-show="!isShow" ng-model="description"></textarea>
+<input id="editsave_btn" type="button" value="{{state}}" ng-click="changeState()"/>
+<input id="cancel_btn"ng-if="!isShow" type="button" value="Cancel" ng-click="cancelChanges()" />
+

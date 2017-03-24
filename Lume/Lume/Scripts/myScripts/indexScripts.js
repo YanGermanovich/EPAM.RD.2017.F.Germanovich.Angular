@@ -1,77 +1,85 @@
-﻿angular.module('LumeAngular', ['ngRoute'])
+﻿angular.module('LumeAngular', ['ngRoute', 'ui.bootstrap', 'ngAnimate','ngSanitize'])
     .controller('IndexController',
-                    ['$scope', 'albumService','$http', function ($scope, albumService,$http) {
-                        $scope.Albums = albumService.GetAll();
-                        $scope.SelectedAlbum = $scope.Albums[0];
-                        $scope.RemoveImg = function (index) {
-                            albumService.RemoveImage(index)
-                        }
-                        $scope.Number;
-                        $scope.GetNumber = function () {
-                            $http.get('Home/GetNumber')
-                                .then(function (response) {
-                                    $scope.Number = response.data;
-                                })
-                        }
-                    }])
+    ['$scope', 'albumService', '$http', function ($scope, albumService, $http) {
+        $scope.loading = false;
+        $scope.GetAllImages = function () {
+            $scope.loading = true;
+            albumService.GetAll()
+                .then(function (responce) {
+                    $scope.Albums = responce.data
+                    $scope.SelectedAlbum = $scope.Albums[0];
+                    $scope.loading = false;
+                });
+        }
+        $scope.GetAllImages()
+        $scope.RemoveImg = function (id) {
+            albumService.RemoveImage(id).then(function (responce) {
+                $scope.GetAllImages()
+            })
+        }
+        $scope.Number;
+    }])
     .controller('AddController',
-                    ['$scope', 'albumService', function ($scope, albumService) {
-                        $scope.Albums = albumService.GetAll();
-                        $scope.SelectedAlbum = $scope.Albums[0];
-                        $scope.TempName = "";
-                        $scope.TempSrc = "";
-                        $scope.AddImage = function () {
-                            albumService.AddImage($scope.TempSrc, $scope.TempName)
-                            $scope.tempName = "";
-                            $scope.tempSrc = "";
-                        }
-                    }])
-    .service('albumService', function () {
-        var Albums = [
-                                {
-                                    nameAlbum: 'album1',
-                                    images: [
-                                                {
-                                                    name: "cat",
-                                                    src: "http://s00.yaplakal.com/pics/pics_original/4/6/8/8310864.jpg",
-                                                },
-
-                                                {
-                                                    name: "minion",
-                                                    src: "http://minionomaniya.ru/wp-content/uploads/2016/01/%D0%BC%D0%B8%D0%BD%D1%8C%D0%BE%D0%BD%D1%8B-%D0%BF%D1%80%D0%B8%D0%BA%D0%BE%D0%BB%D1%8B-%D0%BA%D0%B0%D1%80%D1%82%D0%B8%D0%BD%D0%BA%D0%B8.jpg"
-                                                }
-                                    ]
-                                },
-                                {
-                                    nameAlbum: "album2",
-                                    images: [
-                                        {
-                                            name: "smile",
-                                            src: "http://bm.img.com.ua/nxs/img/prikol/images/large/1/2/308321_879389.jpg",
-                                        },
-
-                                        {
-                                            name: "tiger",
-                                            src: "http://www.cruzo.net/user/images/k/prv/dbb025264e7d1a35772dfa4387514de9_172.jpg"
-                                        }
-                                    ]
-                                }
-        ];
-        return {
-            GetAll: function () {
-                return Albums;
-            },
-            AddImage: function (selectedAlbum, tmpSrc, tmpName) {
-                selectedAlbum.images.push({
-                    name: tmpName,
-                    src: tmpSrc
-                })
-            },
-            RemoveImage: function (selectedAlbum, index) {
-                this.selectedAlbum.images.splice(index, 1);
+    ['$scope', 'albumService', function ($scope, albumService) {
+        albumService.GetAll()
+            .then(function (responce) {
+                $scope.Albums = responce.data;
+                $scope.SelectedAlbum = $scope.Albums[0];
+            });
+        $scope.TempName = "";
+        $scope.TempSrc = "";
+        $scope.AddImage = function () {
+            albumService.AddImage($scope.SelectedAlbum, $scope.TempSrc, $scope.TempName)
+            $scope.TempName = "";
+            $scope.TempSrc = "";
+        }
+    }])
+    .controller('HomeContoller',
+    ['$scope', function ($scope) {
+        $scope.description = "Hello. Welcom to Lume. Lume is a service of objects recognition and searching";
+        $scope.state = "Edit";
+        $scope.isShow = true;
+        $scope.changeState = function () {
+            $scope.isShow = !$scope.isShow;
+            if ($scope.isShow) {
+                $scope.state = "Edit"
+            }
+            else {
+                $scope.state = "Save"
+                $scope.temp = $scope.description;
             }
         }
-    })
+        $scope.cancelChanges = function () {
+            $scope.description = $scope.temp;
+            $scope.changeState();
+        }
+    }])
+    .service('albumService', ["$http", function ($http) {
+        return {
+            GetAll: function () {
+                var respons = $http.get('Home/GetAllImages');
+                return respons;
+            },
+            AddImage: function (selectedAlbum, tmpSrc, tmpName) {
+                $http({
+                    url: "Home/AddImage",
+                    method: "GET",
+                    params: {
+                        AlbumId: selectedAlbum.AlbumId,
+                        Description: tmpName,
+                        Url: tmpSrc
+                    }
+                });
+            },
+            RemoveImage: function (id) {
+                return $http({
+                    url: "Home/RemoveImage",
+                    method: "GET",
+                    params: { imageId: id }
+                });
+            }
+        }
+    }])
     .config(['$locationProvider', '$routeProvider',
         function ($locationProvider, $routeProvider) {
             $routeProvider
@@ -83,8 +91,24 @@
                     templateUrl: "Views/Angular/Add.html",
                     controller: "AddController"
                 })
-            .otherwise({
-                redirectTo: '/Angular/ViewAll'
-            });
+                .when('/Angular/Home', {
+                    templateUrl: "Views/Angular/Home.html",
+                    controller: "HomeContoller"
+                })
+                .otherwise({
+                    redirectTo: '/Angular/Home'
+                });
             $locationProvider.html5Mode(true);
         }])
+    .directive('ngImage',[
+    function () {
+        return {
+            restrict: "E",
+            replace: true,
+            templateUrl: "Views/Angular/image.html",
+            scope: {
+                image: '=',
+            }
+        }
+        }
+    ])

@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lume", "Lume\Lume.csproj", "{727DAAB6-CA04-404E-AF6D-98439C10E6CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ORM", "ORM\ORM.csproj", "{CEA92E8B-7DB2-43CF-971B-0202C39D1056}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E2ETests", "E2ETests\E2ETests.csproj", "{0B75FEE2-233B-4D1B-9BD3-3EF36EA3ADFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{727DAAB6-CA04-404E-AF6D-98439C10E6CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{727DAAB6-CA04-404E-AF6D-98439C10E6CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{727DAAB6-CA04-404E-AF6D-98439C10E6CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEA92E8B-7DB2-43CF-971B-0202C39D1056}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEA92E8B-7DB2-43CF-971B-0202C39D1056}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEA92E8B-7DB2-43CF-971B-0202C39D1056}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEA92E8B-7DB2-43CF-971B-0202C39D1056}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B75FEE2-233B-4D1B-9BD3-3EF36EA3ADFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B75FEE2-233B-4D1B-9BD3-3EF36EA3ADFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B75FEE2-233B-4D1B-9BD3-3EF36EA3ADFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B75FEE2-233B-4D1B-9BD3-3EF36EA3ADFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

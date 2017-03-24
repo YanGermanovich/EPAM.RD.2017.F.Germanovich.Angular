@@ -16,7 +16,7 @@ namespace Lume
             routes.MapRoute(
                 name: "AngularRoute",
                 url: "Angular/{*url}",
-                defaults: new { controller = "Home", action = "Index" }
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
 
             routes.MapRoute(
