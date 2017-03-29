@@ -14,11 +14,22 @@ namespace ORM
     
     public partial class Image
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Image()
+        {
+            this.Carts = new HashSet<Cart>();
+        }
+    
         public int Id { get; set; }
         public string Description { get; set; }
         public string Url { get; set; }
         public int id_Albums { get; set; }
+        public Nullable<double> Image_cost { get; set; }
+        public int id_Extension { get; set; }
     
         public virtual Album Album { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Cart> Carts { get; set; }
+        public virtual Extension Extension { get; set; }
     }
 }

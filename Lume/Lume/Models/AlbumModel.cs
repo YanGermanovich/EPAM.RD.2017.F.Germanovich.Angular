@@ -10,6 +10,7 @@ namespace Lume.Models
     {
         public int AlbumId { get; set; }
         public string Name { get; set; }
+        public int id_User { get; set; }
         public List<ImageModel> Images { get; set; }
     }
 }

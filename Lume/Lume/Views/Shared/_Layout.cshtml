@@ -5,33 +5,117 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/angular")
+    @Styles.Render("~/Content/bootstrap")
+    @Styles.Render("~/Content/css")
 </head>
 <body>
-    <div class="    container-fluid">
-        <nav class="navbar navbar-default">
+    <div class="container-fluid" ng-controller="MutualController">
+        <nav class="navbar navbar-default header" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" ng-click="isNavCollapsed = !isNavCollapsed "> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-                <a class="navbar-brand logo" id="homePage" href="@Url.Action("Angular", "Home")"></a>
+
+                <button type="button" class="navbar-toggle" ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href=@Url.Action("Angular", "Home")>Img</a>
             </div>
-            <div class="navbar-collapse " uib-collapse="isNavCollapsed">
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" ng-class="!navCollapsed && 'in'">
+
                 <ul class="nav navbar-nav navbar-left">
                     <li> <a href=@Url.Action("Angular", "Home")>Home</a> </li>
-                    <li> <a href="@Url.Action("ViewAll", "Angular")">View All</a></li>
-                    <li> <a href="@Url.Action("Add", "Angular")">Add</a> </li>
+                    <li> <a href=@Url.Action("ViewAll", "Angular")>View All</a></li>
+                    <li> <a href=@Url.Action("Add", "Angular")>Add</a> </li>
+
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li>Exit</li>
+                    <li ng-if="!isLogin()">
+                        <div uib-dropdown on-toggle="toggled(open)">
+                            <div class="loginFormText" href id="simple-dropdown" uib-dropdown-toggle>
+                                Register
+                            </div>
+                            <div class="dropdown-menu " uib-dropdown-menu aria-labelledby="simple-dropdown" ng-click="$event.stopPropagation()">
+                                <div class="container-fluid" ng-show="!loading">
+                                    <p ng-if="success" class="alert alert-success">{{success}}</p>
+                                    <p ng-if="error" class="alert alert-danger">{{error}}</p>
+                                    <form name="registerForm">
+                                        <div class="form-group" ng-class="{'has-error':!registerForm.user_email.$valid}">
+                                            <label for="user_email">Email address:</label>
+                                            <input type="email" class="form-control" name="user_email" id="user_email" required="" ng-model="registerData.email">
+                                            <span class="help-block" ng-show="registerForm.user_email.$error.required">Email is required.</span>
+                                            <span class="help-block" ng-show="registerForm.user_email.$error.email">Email is invalid.</span>
+                                        </div>
+
+                                        <div class="form-group" ng-class="{'has-error':!registerForm.password.$valid}">
+                                            <label for="password">Password</label>
+                                            <input class="form-control" type="password" name="password" required="" ng-model="registerData.password" />
+                                            <span class="help-block" ng-show="registerForm.password.$error.required">Password is required.</span>
+                                        </div>
+
+                                        <div class="form-group" ng-class="{'has-error':!registerForm.passwordCompare.$valid}">
+                                            <label for="passwordCompare">Confirm Password</label>
+                                            <input class="form-control" type="password" name="passwordCompare" ng-model="registerData.PasswordCompare" ng-match="registerData.password" />
+                                            <span class="help-block" ng-show="registerForm.passwordCompare.$error.match">Passwords do not match.</span>
+                                        </div>
+                                    </form>
+                                    <button class="btn btn-success" ng-disabled="!registerForm.$valid" ng-click="register()">Register</button>
+                                </div>
+                                <div ng-if="loading">
+                                    <img src="../../img/loading.gif" />
+                                </div>
+                            </div>
+                              
+                        </div>
+                    </li>
+                    <li ng-show="!isLogin()">
+                        <div uib-dropdown on-toggle="toggled(open)">
+                            <div class="loginFormText" href id="simple-dropdown" uib-dropdown-toggle>
+                                Login
+                            </div>
+                            <div class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown" ng-click="$event.stopPropagation()">
+                                <div ng-show="!loading" class="container-fluid">
+                                    <form name="loginForm">
+                                        <p ng-if="success" class="alert alert-success">{{success}}</p>
+                                        <p ng-if="error" class="alert alert-danger">{{error}}</p>
+                                        <div class="form-group" ng-class="{'has-error':!loginForm.user_email.$valid}">
+                                            <label for="user_email">Email address:</label>
+                                            <input type="email" class="form-control" name="user_email" id="user_email" required="" ng-model="loginData.email">
+                                            <span class="help-block" ng-show="loginForm.user_email.$error.required">Email is required.</span>
+                                            <span class="help-block" ng-show="loginForm.user_email.$error.email">Email is invalid.</span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="pwd">Password:</label>
+                                            <input type="password" class="form-control" id="pwd" ng-model="loginData.password">
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" ng-model="Remember"> Remember me</label>
+                                        </div>
+                                    </form>
+                                    <button class="btn btn-success" ng-disabled="!loginForm.$valid" ng-click="login()">Login</button>
+                                </div>
+                                <div ng-if="loading">
+                                    <img src="../../img/loading.gif" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li ng-if="isLogin()"><a href>Welcom {{userName}}</a></li>
+                    <li ng-if="isLogin()"><a ng-click="Logout()">Logout</a></li>
                 </ul>
             </div>
+            <!-- /.navbar-collapse -->
         </nav>
+
+        @RenderBody()
     </div>
 
-    @RenderBody()
-
-    @Scripts.Render("~/bundles/jquery")
     @RenderSection("scripts", required: false)
 </body>
 </html>
+
+

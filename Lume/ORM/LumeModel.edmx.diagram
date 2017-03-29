@@ -4,10 +4,19 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="15fc82001c4842efa5b568e5d6696c9f" Name="Diagram1">
-        <EntityTypeShape EntityType="LumeDBModel.Album" Width="1.5" PointX="0.75" PointY="1.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="LumeDBModel.Image" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
+      <Diagram DiagramId="b145af9460bb45fea62d218925fba6d5" Name="Diagram1">
+        <EntityTypeShape EntityType="LumeDBModel.Album" Width="1.5" PointX="5.25" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="LumeDBModel.Cart" Width="1.5" PointX="9.75" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="LumeDBModel.Extension" Width="1.5" PointX="5.25" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LumeDBModel.Image" Width="1.5" PointX="7.5" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="LumeDBModel.Role" Width="1.5" PointX="0.75" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="LumeDBModel.User" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
+        <AssociationConnector Association="LumeDBModel.FK_Albums_ToUser" ManuallyRouted="false" />
         <AssociationConnector Association="LumeDBModel.FK_Images_ToAlbums" ManuallyRouted="false" />
+        <AssociationConnector Association="LumeDBModel.FK_Carts_ToImage" ManuallyRouted="false" />
+        <AssociationConnector Association="LumeDBModel.FK_Carts_ToUser" ManuallyRouted="false" />
+        <AssociationConnector Association="LumeDBModel.FK_Images_ToExtension" ManuallyRouted="false" />
+        <AssociationConnector Association="LumeDBModel.FK_Users_ToRole" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -26,6 +26,10 @@ namespace ORM
         }
     
         public virtual DbSet<Album> Albums { get; set; }
+        public virtual DbSet<Cart> Carts { get; set; }
+        public virtual DbSet<Extension> Extensions { get; set; }
         public virtual DbSet<Image> Images { get; set; }
+        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<User> Users { get; set; }
     }
 }

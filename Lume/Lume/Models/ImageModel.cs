@@ -11,5 +11,6 @@ namespace Lume.Models
         public int AlbumId { get; set; }
         public string Description { get; set; }
         public string Url { get; set; }
+        public int? Cost { get; set; }
     }
 }

@@ -36,6 +36,7 @@ namespace E2ETests
                 Assert.Fail();
             driver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(3));
             driver.FindElement(By.LinkText("View All")).Click();
+            driver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(3));
             var images = driver.FindElements(By.ClassName("view_image"));
             Assert.IsTrue((count + 1) == images.Count);
             bool flag = false;

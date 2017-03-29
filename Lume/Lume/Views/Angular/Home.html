@@ -1,5 +1,12 @@
-﻿<p id="description_show" ng-show="isShow">{{description}}</p>
-<textarea id="description_edit"type="text" ng-show="!isShow" ng-model="description"></textarea>
-<input id="editsave_btn" type="button" value="{{state}}" ng-click="changeState()"/>
-<input id="cancel_btn"ng-if="!isShow" type="button" value="Cancel" ng-click="cancelChanges()" />
+﻿<div class="container text-center">
+    <div ng-if="!loading">
+        <p id="description_show" ng-show="isShow">{{description}}</p>
+        <textarea class="description_edit" id="description_edit" type="text" ng-show="!isShow" ng-model="$parent.description"></textarea>
+        <input class="btn home_desc_btn" ng-class="{'btn-info':isShow, 'btn-success':!isShow}" id="editsave_btn" type="button" value="{{state}}" ng-click="changeState()" ng-if="isAdmin()" />
+        <input id="cancel_btn" class="home_desc_btn btn btn-warning" ng-if="!isShow" type="button" value="Cancel" ng-click="cancelChanges()" />
+    </div>
 
+    <div ng-if="loading">
+        <img src="../../img/loading.gif" />
+    </div>
+</div>

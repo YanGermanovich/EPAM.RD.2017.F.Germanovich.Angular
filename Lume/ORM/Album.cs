@@ -22,7 +22,9 @@ namespace ORM
     
         public int Id { get; set; }
         public string Name { get; set; }
+        public int id_User { get; set; }
     
+        public virtual User User { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Image> Images { get; set; }
     }

@@ -1,13 +1,32 @@
-﻿<select ng-options="album as album.Name for album in Albums" ng-model="SelectedAlbum"></select>
-<br>
-<input id="tmp_src" type="text" placeholder="Enter name" ng-model="TempName">
-<br>
-<input id="tmp_desc" type="text" placeholder="Enter url" ng-model="TempSrc">
-<br>
-<input id="add_btn" type="button" value="Add Image" ng-click="AddImage()">
-<br>
-
-<div>
-    <p>{{TempName}}</p>
-    <img ng-src={{TempSrc}} />
+﻿<div class="container upload_form ">
+    <div ng-show="!loading" class="row">
+        <div class="col-sm-6">
+        <div>
+            <select class="form-control" ng-options="album as album.Name for album in Albums | filter: gerMyAlbums" ng-model="SelectedAlbum"></select>
+        </div>
+        <div>
+            <input class="form-control" id="tmp_src" type="text" placeholder="Enter name" ng-model="TempName">
+        </div>
+        <div>
+            <uib-tabset active="activeJustified" justified="true">
+                <uib-tab index="0" heading="Url" ng-click="isUrl=true">
+                    <input class="form-control" id="tmp_desc" type="text" placeholder="Enter url" ng-model="$parent.$parent.TempSrc">
+                </uib-tab>
+                <uib-tab index="1" heading="File" ng-click="isUrl=false">
+                    <input id="uploadFile" type="file" name="file" onchange="angular.element(this).scope().uploadFile(this.files)" />
+                </uib-tab>
+            </uib-tabset>
+        </div>
+        <div>
+            <input id="add_btn" class="btn btn-success" type="button" value="Add Image" ng-click="AddImage()">
+        </div>
+        </div>
+        <div class="col-sm-6">
+            <p>{{TempName}}</p>
+            <img ng-src={{TempSrc}} />
+        </div>
+    </div>
+    <div ng-if="loading">
+        <img src="../../img/loading.gif" />
+    </div>
 </div>

@@ -1,68 +1,59 @@
-﻿body {
-    font-size: .85em;
-    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
-    color: #232323;
-    background-color: #fff;
+﻿html {
+    min-width: 330px;
 }
 
-header, footer, nav, section {
+.header a {
+    cursor: pointer;
+}
+
+.loginFormText {
+    cursor: pointer;
     display: block;
+    padding-top: 15px;
+    color: #777;
+    padding-bottom: 15px;
 }
 
+    .loginFormText:hover {
+        color: #333;
+    }
 
-/* Styles for basic forms
------------------------------------------------------------*/
-fieldset {
-    border: 1px solid #ddd;
-    padding: 0 1.4em 1.4em 1.4em;
-    margin: 0 0 1.5em 0;
+.navbar-right li {
+    padding: 0 10px 0 10px;
+
 }
 
-legend {
-    font-size: 1.2em;
-    font-weight: bold;
+.image_src {
+    max-width: 100%;
 }
 
-textarea {
-    min-height: 75px;
+.del_btn {
+    margin-top:5px;
 }
 
-.editor-label {
-    margin: 1em 0 0 0;
+.description_edit {
+    width: 80%;
+    display: block;
+    margin: auto;
+}
+.home_desc_btn
+{
+    margin:10px 5px 0 5px;
+}
+.image_src{
+    height:150px;
+}
+.view_image{
+    display:inline-block;
+    padding: 20px 30px 10px 0;
+}
+.images{
+    display:block;
 }
 
-.editor-field {
-    margin: 0.5em 0 0 0;
+.album_select{
+    padding: 3px;
 }
-
-
-/* Styles for validation helpers
------------------------------------------------------------*/
-.field-validation-error {
-    color: #f00;
-}
-
-.field-validation-valid {
-    display: none;
-}
-
-.input-validation-error {
-    border: 1px solid #f00;
-    background-color: #fee;
-}
-
-.validation-summary-errors {
-    font-weight: bold;
-    color: #f00;
-}
-
-.validation-summary-valid {
-    display: none;
-}
-
-.navbar-brand > img {
-    height: 100%;
-    padding: 8px;
-    width: auto;
-    margin: 0 10px 0 10px;
+.upload_form  div{
+    margin: 20px 0 20px 0;
 }
