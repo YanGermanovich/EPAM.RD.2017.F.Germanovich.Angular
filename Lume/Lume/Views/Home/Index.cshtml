@@ -2,7 +2,10 @@
     ViewBag.Title = "Lume";
 }
 
-
-<div ng-view>
+<div ng-if="!$root.AutoLoginWait" ng-view>
 </div>
+<div ng-if="$root.AutoLoginWait">
+    <img src="../../img/loading.gif" />
+</div>
+
 

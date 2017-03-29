@@ -22,7 +22,6 @@ namespace Lume.Controllers
         {
             return View();
         }
-        [HttpGet]
         public JsonResult GetAllImages()
         {
             AlbumModel[] albums = context.Set<Album>()
@@ -37,7 +36,13 @@ namespace Lume.Controllers
                                                                                     ImageId = im.Id,
                                                                                     AlbumId = im.id_Albums,
                                                                                     Description = im.Description,
-                                                                                    Url = im.Url
+                                                                                    Extension = new ExtensionModel()
+                                                                                    {
+                                                                                        Id = im.id_Extension,
+                                                                                        Name = im.Extension.Name
+                                                                                    },
+                                                                                    Url = im.Url,
+                                                                                    Cost = im.Image_cost
                                                                                 }).ToList()
                                                         })
                                                         .ToArray();
@@ -46,7 +51,7 @@ namespace Lume.Controllers
 
         public JsonResult AddImage(ImageModel img)
         {
-            context.Set<Image>().Add(new Image() { id_Albums = img.AlbumId, Description = img.Description, Url = img.Url });
+            context.Set<Image>().Add(new Image() { id_Albums = img.AlbumId, Description = img.Description, Url = img.Url, Image_cost = img.Cost });
             context.SaveChanges();
             return null;
         }
@@ -59,8 +64,10 @@ namespace Lume.Controllers
                 context.Set<Extension>().Add(new Extension() { Name = filetype });
             var album = int.Parse(HttpContext.Request.Form.Get("album"));
             var name = HttpContext.Request.Form.Get("name");
+            double? cost = null;
+            cost = HttpContext.Request.Form.Get("cost") != null ? Convert.ToDouble(HttpContext.Request.Form.Get("cost")):cost;
             var currentExt = context.Set<Extension>().FirstOrDefault(ex => ex.Name == filetype);
-            context.Set<Image>().Add(new Image() { id_Albums = album, Description = name, id_Extension = currentExt.Id });
+            context.Set<Image>().Add(new Image() { id_Albums = album, Description = name, id_Extension = currentExt.Id,Image_cost = cost });
             context.SaveChanges();
             var currentImage = context.Set<Image>().Where(im => im.Description == name).ToList().Last();
             int id = currentImage.Id;
@@ -86,6 +93,23 @@ namespace Lume.Controllers
             var currentUser = context.Set<User>().FirstOrDefault(u => u.User_Email == email && u.User_Password == password);
             if (currentUser == null)
                 return Json(new { error = "Incorect email or password" });
+            List<ImageModel> imagesInCart = new List<ImageModel>();
+            foreach(Image im in context.Set<Cart>().Where(c => c.id_User == currentUser.Id).Select(c => c.Image))
+            {
+                imagesInCart.Add(new ImageModel()
+                {
+                    ImageId = im.Id,
+                    AlbumId = im.id_Albums,
+                    Description = im.Description,
+                    Extension = new ExtensionModel()
+                    {
+                        Id = im.id_Extension,
+                        Name = im.Extension.Name
+                    },
+                    Url = im.Url,
+                    Cost = im.Image_cost
+                });
+            }
             return Json(new
             {
                 success = "Login successful",
@@ -94,6 +118,11 @@ namespace Lume.Controllers
                     Id = currentUser.Id,
                     Email = currentUser.User_Email,
                     Role = (UserRole)currentUser.id_Role
+                },
+                cart = new CartModel()
+                {
+                    id_User = currentUser.Id,
+                    Images = imagesInCart
                 }
             });
         }
@@ -116,6 +145,22 @@ namespace Lume.Controllers
         public JsonResult SetDesc(string desc)
         {
             System.IO.File.WriteAllText($@"{HostingEnvironment.ApplicationPhysicalPath }\Content\Site_Desc.txt", desc);
+            return null;
+        }
+
+        public JsonResult AddToCart(int id_User, int Image_Id)
+        {
+            context.Set<Cart>().Add(new Cart() { id_Image = Image_Id, id_User = id_User });
+            context.SaveChanges();
+            return null;
+        }
+        public JsonResult ClearCart(int id_User)
+        {
+            foreach(Cart cartToRemove in context.Set<Cart>().Where(c => c.id_User==id_User))
+            {
+                context.Set<Cart>().Remove(cartToRemove);
+            }
+            context.SaveChanges();
             return null;
         }
     }

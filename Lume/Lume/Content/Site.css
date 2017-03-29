@@ -2,6 +2,18 @@
     min-width: 330px;
 }
 
+
+.background {
+    background: url('back.jpg') no-repeat center center;
+    background-size:cover;
+    height: 100vh;
+}
+
+.content {
+    background-color: white;
+    height: 100vh;
+}
+
 .header a {
     cursor: pointer;
 }
@@ -40,8 +52,8 @@
 {
     margin:10px 5px 0 5px;
 }
-.image_src{
-    height:150px;
+.image_src_big, .image_preview {
+    height: 150px;
 }
 .view_image{
     display:inline-block;
@@ -56,4 +68,15 @@
 }
 .upload_form  div{
     margin: 20px 0 20px 0;
+}
+.extensions{
+    display:inline-block;
+    margin: 0 10px 0 10px;
+}
+.btns{
+    display: inline-block;
+    margin:0 20px 0 0;
+}
+.image_cost {
+    padding-top: 5px;
 }

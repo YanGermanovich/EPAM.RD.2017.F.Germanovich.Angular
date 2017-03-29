@@ -1,7 +1,57 @@
-﻿angular.module('LumeAngular', ['ui.bootstrap', 'ngAnimate', 'ngCookies', 'ngSanitize', 'ngRoute'])
+﻿var fileReader = function ($q, $log) {
+
+    var onLoad = function (reader, deferred, scope) {
+        return function () {
+            scope.$apply(function () {
+                deferred.resolve(reader.result);
+            });
+        };
+    };
+
+    var onError = function (reader, deferred, scope) {
+        return function () {
+            scope.$apply(function () {
+                deferred.reject(reader.result);
+            });
+        };
+    };
+
+    var onProgress = function (reader, scope) {
+        return function (event) {
+            scope.$broadcast("fileProgress",
+                {
+                    total: event.total,
+                    loaded: event.loaded
+                });
+        };
+    };
+
+    var getReader = function (deferred, scope) {
+        var reader = new FileReader();
+        reader.onload = onLoad(reader, deferred, scope);
+        reader.onerror = onError(reader, deferred, scope);
+        reader.onprogress = onProgress(reader, scope);
+        return reader;
+    };
+
+    var readAsDataURL = function (file, scope) {
+        var deferred = $q.defer();
+
+        var reader = getReader(deferred, scope);
+        reader.readAsDataURL(file);
+
+        return deferred.promise;
+    };
+
+    return {
+        readAsDataUrl: readAsDataURL
+    };
+};
+angular.module('LumeAngular', ['ui.bootstrap', 'ngAnimate', 'ngCookies', 'ngSanitize', 'ngRoute'])
     .controller('IndexController',
-    ['$scope', 'albumService', '$http', function ($scope, albumService, $http) {
+    ['$scope', 'albumService', '$http', '$rootScope', function ($scope, albumService, $http, $rootScope) {
         $scope.loading = false;
+        $scope.SelectedAlbum = null;
         $scope.GetAllImages = function () {
             $scope.loading = true;
             albumService.GetAll()
@@ -9,29 +59,88 @@
                     $scope.Albums = responce.data
                     $scope.SelectedAlbum = $scope.Albums[0];
                     $scope.loading = false;
+                    $scope.AlbumChange();
+
                 });
         }
-        $scope.GetAllImages()
+        $scope.albumFilter = function (album) {
+            return album.id_User == $rootScope.Id;
+        };
+        $scope.AlbumChange = function () {
+            $scope.ViewImages = [];
+            $scope.myAlbum = $scope.SelectedAlbum.id_User == $rootScope.User.Id;
+            $scope.Extensions = [{
+                Id: -1,
+                Name: "View all",
+                show: true
+            }]
+            angular.forEach($scope.SelectedAlbum.Images, function (image, key) {
+                $scope.ViewImages[image.ImageId] = true;
+                if ($scope.Extensions.filter(e => e.Name == image.Extension.Name).length == 0) {
+                    $scope.Extensions.push({
+                        Id: image.Extension.Id,
+                        Name: image.Extension.Name,
+                        show: false
+                    });
+                }
+            });
+        }
+        $scope.imageFilter = function (image) {
+            if ($scope.Extensions[0].show)
+                return true;
+            var isTrue = false;
+            for (i = 0; i < $scope.Extensions.length & !isTrue; i++) {
+                isTrue = $scope.Extensions[i].show && $scope.Extensions[i].Id == image.Extension.Id
+                $scope.result = $scope.result + i.toString() + ",";
+            }
+            return isTrue;
+        }
+        $scope.GetAllImages();
+        $scope.Extensions = [];
         $scope.RemoveImg = function (id) {
             albumService.RemoveImage(id).then(function (responce) {
                 $scope.GetAllImages()
             })
         }
+        $scope.AddImageToCart = function (imageId) {
+            albumService.BuyImage($rootScope.User.Id, imageId).then(function (responce) {
+                if (responce.data == "")
+                {
+                    var isTrue = true;
+                    for (i = 0; i < $scope.SelectedAlbum.Images.length & isTrue; i++) {
+                        if ($scope.SelectedAlbum.Images[i].ImageId == imageId) {
+                            $rootScope.cart.Images.push($scope.SelectedAlbum.Images[i]);
+                            isTrue = false;
+                        }
+                    };
+        }
+    })
+        }
         $scope.Number;
     }])
     .controller('AddController',
-    ['$scope', 'albumService', '$rootScope', '$location', function ($scope, albumService, $rootScope, $location) {
-        $scope.gerMyAlbums = function (item) {
-            return $rootScope.User.Id == item.id_User; 
+    ['$scope', 'albumService', '$rootScope', '$location', 'fileReader', function ($scope, albumService, $rootScope, $location, fileReader) {
+        $scope.getMyAlbums = function (item) {
+            return $rootScope.User.Id == item.id_User;
         }
-        $scope.isUrl;
+        
+        $scope.isUrl = true;
+        $scope.cost = 0;
         $scope.loading = false;
         $scope.files = new FormData();
         albumService.GetAll()
             .then(function (responce) {
                 $scope.Albums = responce.data;
                 $scope.SelectedAlbum = $scope.Albums[0];
+                $scope.IsThereMyAlbums = function () {
+                    var isFalse = false;
+                    for (i = 0; i < $scope.Albums.length & !isFalse; i++) {
+                        isFalse = $scope.Albums.id_User == $rootScope.User.Id;
+                    }
+                    return isFalse;
+                }()
             });
+        
         $scope.TempName = "";
         $scope.TempSrc = "";
         $scope.uploadFile = function (files) {
@@ -40,24 +149,35 @@
             else
                 document.getElementById("uploadFile").value = null;
         };
+
+        $scope.getFile = function () {
+            fileReader.readAsDataUrl($scope.file, $scope)
+                .then(function (result) {
+                    $scope.TempSrc = result;
+                });
+
+            $scope.$on("fileProgress", function (e, progress) {
+                $scope.progress = progress.loaded / progress.total;
+            });
+
+        }
         $scope.AddImage = function () {
             $scope.loading = true;
             if ($scope.isUrl) {
-                albumService.AddImage($scope.SelectedAlbum, $scope.TempSrc, $scope.TempName).then(function () {
+                albumService.AddImage($scope.SelectedAlbum, $scope.TempSrc, $scope.TempName, $scope.cost).then(function () {
                     $scope.loading = false;
                     $location.path("/Angular/ViewAll");
                 });
                 $scope.TempSrc = "";
             }
-            else 
-            {
-                albumService.UploadImage($scope.SelectedAlbum.AlbumId, $scope.file, $scope.TempName).then(function () {
+            else {
+                albumService.UploadImage($scope.SelectedAlbum.AlbumId, $scope.file, $scope.TempName, $scope.cost).then(function () {
                     $scope.loading = false;
                     $location.path("/Angular/ViewAll");
                 })
             }
-            $scope .TempName = "";
-            }
+            $scope.TempName = "";
+        }
     }])
     .controller('HomeContoller',
     ['$scope', '$rootScope', '$http', function ($scope, $rootScope, $http) {
@@ -101,10 +221,19 @@
             return false;
         }
     }])
+
     .controller('MutualController',
     ['$scope', "$http", "$timeout", '$rootScope', '$cookies', 'userService', '$location', '$route',
         function ($scope, $http, $timeout, $rootScope, $cookies, userService, $location, $route) {
-            $scope.userName = $cookies.getObject('User').email;
+            $scope.userName = function () {
+                if ($scope.isLogin) {
+                    return $cookies.getObject('User').email;
+                }
+                return null;
+            };
+            $scope.PurchaseCount = function () {
+                return $rootScope.cart.Images.length;
+            }
             $scope.isLogin = function () {
                 return !($rootScope.User == null);
             }
@@ -113,6 +242,10 @@
                 $rootScope.User = null;
                 $route.reload();
             }
+            $scope.AutoLoginWait = function ()
+            {
+                return $rootScope.AutoLoginWait;
+            }()
             $scope.loginData = {};
             $scope.Remember = false;
             $scope.login = function () {
@@ -133,9 +266,9 @@
                         }
                         $scope.loginData = null;
                         $scope.Remember = false;
+                        $rootScope.cart = responce.data.cart;
                         $timeout(function () {
                             $scope.success = false;
-                            $location.path("/Angular/ViewAll");
                         }, 1500);
                     }
 
@@ -158,28 +291,62 @@
             }
         }])
 
+    .controller('CartController',
+    ['$scope', '$rootScope', '$location','$http',
+        function ($scope, $rootScope, $location, $http) {
+            $scope.AllIMages = function () {
+                $rootScope.User;
+                $rootScope.cart;
+                if ($rootScope.cart) {
+                    $scope.ViewImages = [];
+                    angular.forEach($rootScope.cart.Images, function (image, key) {
+                        $scope.ViewImages[image.ImageId] = true;
+                    });
+                    return $rootScope.cart.Images;
+                }
+            }();
+            $scope.ClearCart = function ()
+            {
+                $http({
+                    url: "Home/ClearCart",
+                    method: "POST",
+                    data: { id_User: $rootScope.User.Id }
+                }).then(function (responce) {
+                    if (responce.data == "")
+                    {
+                        $scope.AllIMages = [];
+                        $rootScope.cart.Images = [];
+                    }
+                })
+            }
+        }])
+
     .service('albumService', ["$http", function ($http) {
         return {
             GetAll: function () {
-                var respons = $http.get('Home/GetAllImages');
-                return respons;
+                return $http({
+                    url: "Home/GetAllImages",
+                    method: "POST",
+                });
             },
-            AddImage: function (selectedAlbum, tmpSrc, tmpName) {
+            AddImage: function (selectedAlbum, tmpSrc, tmpName, cost) {
                 return $http({
                     url: "Home/AddImage",
                     method: "GET",
                     params: {
                         AlbumId: selectedAlbum.AlbumId,
                         Description: tmpName,
-                        Url: tmpSrc
+                        Url: tmpSrc,
+                        Cost: cost
                     }
                 });
             },
-            UploadImage: function (selectedAlbum,file,name) {
+            UploadImage: function (selectedAlbum, file, name, cost) {
                 var fd = new FormData();
                 fd.append('album', selectedAlbum);
                 fd.append('file', file);
                 fd.append('name', name);
+                fd.append('cost', cost);
                 return $http({
                     url: "Home/UploadImage",
                     method: 'POST',
@@ -193,6 +360,13 @@
                     url: "Home/RemoveImage",
                     method: "GET",
                     params: { imageId: id }
+                });
+            },
+            BuyImage: function (userId, imageId) {
+                return $http({
+                    url: "Home/AddToCart",
+                    method: "POST",
+                    data:{id_User: userId, Image_Id: imageId }
                 });
             }
         }
@@ -219,6 +393,10 @@
     .config(['$locationProvider', '$routeProvider',
         function ($locationProvider, $routeProvider) {
             $routeProvider
+                .when('/Angular/Cart', {
+                    templateUrl: "Views/Angular/Cart.html",
+                    controller: "CartController"
+                })
                 .when('/Angular/ViewAll', {
                     templateUrl: "Views/Angular/ViewAll.html",
                     controller: "IndexController"
@@ -256,6 +434,23 @@
             }
         }
     ])
+    .directive("ngFileSelect", function () {
+
+        return {
+            link: function ($scope, el) {
+
+                el.bind("change", function (e) {
+
+                    $scope.file = (e.srcElement || e.target).files[0];
+                    $scope.getFile();
+                })
+
+            }
+
+        }
+
+
+    })
     .directive("ngMatch", ['$parse', function ($parse) {
 
         var directive = {
@@ -287,24 +482,37 @@
 
         }
     }])
+
+    .factory("fileReader", ["$q", "$log", fileReader])
     .run(['$location', '$cookies', '$rootScope', 'userService', function ($location, $cookies, $rootScope, userService) {
         $rootScope.$on("$routeChangeStart", function (event, next, current) {
+            $rootScope.AutoLoginWait = true;
             if ($rootScope.User == null) {
                 if ($cookies.get('User') == null) {
                     var validPages = ["/Angular/Login", "/Angular/Register"]
                     if (validPages.indexOf($location.path()) < 0) {
+                        $rootScope.AutoLoginWait = false;
                         $location.path("Angular/Home");
                     }
+                        $rootScope.AutoLoginWait = false;
                 }
                 else {
                     userService.Login($cookies.getObject('User')).then(function (responce) {
-                        if (responce.data.error)
+                        if (responce.data.error) {
                             $cookies.remove('User');
+                            $rootScope.AutoLoginWait = false;
+                        }
                         else {
+                            $rootScope.cart = responce.data.cart;
                             $rootScope.User = responce.data.user;
+                            $rootScope.AutoLoginWait = false;
+
                         }
                     });
                 }
+            }
+            else {
+                $rootScope.AutoLoginWait = false;
             }
         })
     }])

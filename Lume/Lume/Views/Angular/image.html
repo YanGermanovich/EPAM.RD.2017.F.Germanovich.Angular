@@ -1,4 +1,6 @@
 ﻿<div>
     <p class="image_desc">{{image.Description}}</p>
-    <img class="image_src"  ng-src={{image.Url}}>
+    <img class="image_src" ng-class="{'image_src_big' : $parent.ViewImages[image.ImageId] == true}" ng-click="$parent.ViewImages[image.ImageId] = !$parent.ViewImages[image.ImageId]" ng-src={{image.Url}}>
+    
+    <div ng-if="!image.Cost">Not for sale</div>
 </div>

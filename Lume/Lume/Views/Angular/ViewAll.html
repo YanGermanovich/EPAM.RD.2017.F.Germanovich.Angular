@@ -1,11 +1,24 @@
 ﻿<div class="container-fluid">
     <div ng-if="!loading">
-        <select class="album_select" ng-options="album as album.Name for album in Albums" ng-model="SelectedAlbum"></select>
+        <select class="album_select" ng-options="album as album.Name for album in Albums" ng-model="$parent.SelectedAlbum" ng-change="AlbumChange()"></select>
+        <div class="panel panel-body">
+            <div ng-repeat="extension in Extensions" class="extensions">
+                <input type="checkbox" ng-model="extension.show" />  {{extension.Name}}
+            </div>
+        </div>
         <div class="images">
-            <div class="view_image" ng-repeat="image in SelectedAlbum.Images">
+            <div class="view_image" ng-repeat="image in SelectedAlbum.Images | filter : imageFilter">
                 <ng-image image=image></ng-image>
-                <div class="del_btn_div">
+                <div class="del_btn_div btns" ng-if="myAlbum">
                     <input class="del_btn btn btn-info " type="button" value="Remove" ng-click="RemoveImg(image.ImageId)">
+                </div>
+                <div class="btns row" ng-if="image.Cost">
+                    <div  class="col-xs-6 image_cost">
+                        {{image.Cost}}$ 
+                    </div>
+                    <div ng-if="!myAlbum" class="col-xs-6">
+                        <input class="del_btn btn btn-success btn-xs " type="button" value="Buy" ng-click="AddImageToCart(image.ImageId)">
+                    </div>
                 </div>
             </div>
         </div>
