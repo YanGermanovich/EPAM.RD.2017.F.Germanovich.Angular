@@ -9,14 +9,15 @@
         <div class="images">
             <div class="view_image" ng-repeat="image in SelectedAlbum.Images | filter : imageFilter">
                 <ng-image image=image></ng-image>
-                <div class="del_btn_div btns" ng-if="myAlbum">
+                <div class="del_btn_div btns" ng-if="myImage(image)">
                     <input class="del_btn btn btn-info " type="button" value="Remove" ng-click="RemoveImg(image.ImageId)">
                 </div>
                 <div class="btns row" ng-if="image.Cost">
                     <div  class="col-xs-6 image_cost">
                         {{image.Cost}}$ 
                     </div>
-                    <div ng-if="!myAlbum" class="col-xs-6">
+                    
+                    <div ng-if="!myImage(image)" class="col-xs-6">
                         <input class="del_btn btn btn-success btn-xs " type="button" value="Buy" ng-click="AddImageToCart(image.ImageId)">
                     </div>
                 </div>

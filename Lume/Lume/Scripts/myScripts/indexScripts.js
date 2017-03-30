@@ -57,6 +57,13 @@ angular.module('LumeAngular', ['ui.bootstrap', 'ngAnimate', 'ngCookies', 'ngSani
             albumService.GetAll()
                 .then(function (responce) {
                     $scope.Albums = responce.data
+                    var AllImages = [];
+                    angular.forEach($scope.Albums, function (album, key) {
+                        angular.forEach(album.Images, function (image, key) {
+                            AllImages.push(image);
+                        })
+                    })
+                    $scope.Albums.splice(0, 0, { AlbumId:-1, Name: "All images", id_User: -1, Images: AllImages });
                     $scope.SelectedAlbum = $scope.Albums[0];
                     $scope.loading = false;
                     $scope.AlbumChange();
@@ -66,9 +73,16 @@ angular.module('LumeAngular', ['ui.bootstrap', 'ngAnimate', 'ngCookies', 'ngSani
         $scope.albumFilter = function (album) {
             return album.id_User == $rootScope.Id;
         };
+        $scope.myImage = function (image) {
+            for (i = 0; i < $scope.Albums.length; i++) {
+                if ($scope.Albums[i].AlbumId == image.AlbumId) {
+                    return $scope.Albums[i].id_User == $rootScope.User.Id;
+                }
+            }
+        }
+
         $scope.AlbumChange = function () {
             $scope.ViewImages = [];
-            $scope.myAlbum = $scope.SelectedAlbum.id_User == $rootScope.User.Id;
             $scope.Extensions = [{
                 Id: -1,
                 Name: "View all",
