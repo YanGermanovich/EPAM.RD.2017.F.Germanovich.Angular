@@ -30,9 +30,9 @@
         color: #333;
     }
 
-.navbar-right li {
+@media (min-width:768px) 
+{.navbar-right li {
     padding: 0 10px 0 10px;
-
 }
 
 .image_src {
@@ -58,6 +58,7 @@
 .view_image{
     display:inline-block;
     padding: 20px 30px 10px 0;
+    vertical-align:top;
 }
 .images{
     display:block;

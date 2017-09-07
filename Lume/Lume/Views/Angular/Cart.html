@@ -1,9 +1,11 @@
 ﻿<div>
     <div>
-        You have {{AllIMages.length}} purshase(s)
+        You have {{PurchaseCount()}} purshase(s)
         <input type="button" class="btn btn-danger" value="Clear cart" ng-click="ClearCart()" />
     </div>
     <div class="view_image" ng-repeat="image in AllIMages track by $index">
+        Count: {{image.Count}}
         <ng-image image=image></ng-image>
+
     </div>
 </div>

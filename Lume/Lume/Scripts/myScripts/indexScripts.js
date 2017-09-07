@@ -149,7 +149,7 @@ angular.module('LumeAngular', ['ui.bootstrap', 'ngAnimate', 'ngCookies', 'ngSani
                 $scope.IsThereMyAlbums = function () {
                     var isFalse = false;
                     for (i = 0; i < $scope.Albums.length & !isFalse; i++) {
-                        isFalse = $scope.Albums.id_User == $rootScope.User.Id;
+                        isFalse = $scope.Albums[i].id_User == $rootScope.User.Id;
                     }
                     return isFalse;
                 }()
@@ -241,7 +241,7 @@ angular.module('LumeAngular', ['ui.bootstrap', 'ngAnimate', 'ngCookies', 'ngSani
         function ($scope, $http, $timeout, $rootScope, $cookies, userService, $location, $route) {
             $scope.userName = function () {
                 if ($scope.isLogin) {
-                    return $cookies.getObject('User').email;
+                    return $rootScope.User.Email;
                 }
                 return null;
             };
@@ -316,7 +316,25 @@ angular.module('LumeAngular', ['ui.bootstrap', 'ngAnimate', 'ngCookies', 'ngSani
                     angular.forEach($rootScope.cart.Images, function (image, key) {
                         $scope.ViewImages[image.ImageId] = true;
                     });
-                    return $rootScope.cart.Images;
+                    var imagesWithCount = [];
+
+                    angular.forEach($rootScope.cart.Images, function (image, key) {
+                        var found = false;
+                        for (var i = 0; i < imagesWithCount.length; i++) {
+                            if (imagesWithCount[i].ImageId == image.ImageId) {
+                                found = true;
+                                imagesWithCount[i].Count++;
+                                break;
+                            }
+                        }
+                        if (!found)
+                        {
+                            image.Count = 1;
+                            imagesWithCount.push(image)
+                        }
+                    });
+
+                    return imagesWithCount;
                 }
             }();
             $scope.ClearCart = function ()
